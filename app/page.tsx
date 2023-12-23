@@ -65,6 +65,7 @@ const handleSubmit = (event: any) => {//Giriş yap butonuna tıklandığında
   .catch((error) => {//giriş başarısız
     const errorCode = error.code;
     const errorMessage = error.message;
+
     setError(true);
     setIsLoading(false)
     });

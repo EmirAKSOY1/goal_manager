@@ -1,7 +1,7 @@
 "use client"
 import React,{ useState } from 'react';
 import Image from 'next/image'
-
+import { useRouter } from 'next/navigation'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -37,8 +37,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 export default function Home() {
   const [inputs, setInputs] = useState({});
-  const [open, setOpen] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState(false);
+  const [already_error, setalready_Error] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
   const handleChange = (event:any) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -49,8 +52,9 @@ export default function Home() {
       return;
     }
 
-    setOpen(false);
+    setSuccess(false);
   };
+
 const handleSubmit = (event: any) => {
     setIsLoading(true);
     //<Spinner/>
@@ -59,12 +63,21 @@ const handleSubmit = (event: any) => {
     createUserWithEmailAndPassword(auth, inputs.email, inputs.password)
     .then((userCredential) => {
     const user = userCredential.user;
-    setOpen(true);
+    setSuccess(true);
     setIsLoading(false)
+    router.push('./');
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    
+    if(errorCode === "auth/email-already-in-use"){
+      setalready_Error(true);
+    }else{
+      setError(true);
+    }
+    
+    setIsLoading(false)
     });
   }
   return (
@@ -135,9 +148,21 @@ const handleSubmit = (event: any) => {
                 {isLoading ? <Spinner />:true }
               </div>
             </form>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
          Hesabınız başarı ile oluşturuldu!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Kayıt Oluşturulurken bir problem yaşandı tekrar deneyinz!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={already_error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Zaten böyle bir mail var!
         </Alert>
       </Snackbar>
             
