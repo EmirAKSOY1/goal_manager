@@ -29,10 +29,13 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
 export default function Home() {
   const [inputs, setInputs] = useState({});
-  const [open, setOpen] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const handleChange = (event:any) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -44,22 +47,26 @@ export default function Home() {
       return;
     }
 
-    setOpen(false);
+    setSuccess(false);
+    setError(false);
   };
-const handleSubmit = (event: any) => {
-    setIsLoading(true);
-    setOpen(true);
+const handleSubmit = (event: any) => {//Giriş yap butonuna tıklandığında 
+    setIsLoading(true);//spinner döndür
+    
     event.preventDefault();
 
-    signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+    signInWithEmailAndPassword(auth, inputs.email, inputs.password)//firebase giriş işlemi
     .then((userCredential) => {
+      console.log("Giriş Başarılı");
     const user = userCredential.user;
-    
+    setSuccess(true);//giriş başaarılı
     setIsLoading(false)
   })
-  .catch((error) => {
+  .catch((error) => {//giriş başarısız
     const errorCode = error.code;
     const errorMessage = error.message;
+    setError(true);
+    setIsLoading(false)
     });
   }
   return (
@@ -68,9 +75,11 @@ const handleSubmit = (event: any) => {
       <body className="h-full">
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img className="mx-auto h-20 w-auto"
+            <Image className="mx-auto h-20 w-auto"
               src="https://www.svgrepo.com/show/66257/goal.svg"
               alt="Your Company"
+              width={500}
+              height={500}
             />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
               Giriş Yap
@@ -140,9 +149,15 @@ const handleSubmit = (event: any) => {
                 Hemen kayıt ol
               </a>
             </p>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           Giriş başarılı!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Lütfen Bilgilerinizi kontrol ediniz!
         </Alert>
       </Snackbar>
           </div>

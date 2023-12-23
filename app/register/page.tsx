@@ -137,7 +137,7 @@ const handleSubmit = (event: any) => {
             </form>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-         Kaydınız başarı ile oluşturuldu!
+         Hesabınız başarı ile oluşturuldu!
         </Alert>
       </Snackbar>
             
