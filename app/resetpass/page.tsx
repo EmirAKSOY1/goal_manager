@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword ,sendPasswordResetEmail  } from "firebase/auth";
-import Spinner from "./Component/spinner";
+import Spinner from "../Component/spinner";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 const firebaseConfig = {
@@ -29,6 +29,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
 export default function Home() {
   const [inputs, setInputs] = useState({});
   const [open, setOpen] = React.useState(false);
@@ -38,7 +39,6 @@ export default function Home() {
     const value = event.target.value;
     setInputs(values => ({...values, [name]: value}))
   }
-
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -48,13 +48,13 @@ export default function Home() {
   };
 const handleSubmit = (event: any) => {
     setIsLoading(true);
-    setOpen(true);
+    //<Spinner/>
     event.preventDefault();
 
-    signInWithEmailAndPassword(auth, inputs.email, inputs.password)
-    .then((userCredential) => {
-    const user = userCredential.user;
-    
+    sendPasswordResetEmail(auth, inputs.email)
+    .then(() => {
+      setOpen(true);
+
     setIsLoading(false)
   })
   .catch((error) => {
@@ -73,7 +73,7 @@ const handleSubmit = (event: any) => {
               alt="Your Company"
             />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Giriş Yap
+              Şifreni Sıfırla
             </h2>
           </div>
 
@@ -97,30 +97,7 @@ const handleSubmit = (event: any) => {
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                    Şifre
-                  </label>
-                  <div className="text-sm">
-                    <a href="./resetpass" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                      Şifreni mi unuttun?
-                    </a>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    value={inputs.pass}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
+
 
               <div>
                 <button
@@ -128,21 +105,16 @@ const handleSubmit = (event: any) => {
                   disabled={isLoading}
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  Giriş Yap 
+                 Şifreyi Sıfırla
                 </button>
                 {isLoading ? <Spinner />:true }
               </div>
             </form>
 
-            <p className="mt-10 text-center text-sm text-gray-500">
-              Hesabın yok mu?{' '}
-              <a href="./register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                Hemen kayıt ol
-              </a>
-            </p>
+
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Giriş başarılı!
+          Şifre sıfırlama bağlantısı mailinize iletildi. Lütfen kontrol ediniz!
         </Alert>
       </Snackbar>
           </div>

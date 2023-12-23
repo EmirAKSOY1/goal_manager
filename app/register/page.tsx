@@ -5,8 +5,13 @@ import Image from 'next/image'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword ,sendPasswordResetEmail  } from "firebase/auth";
-import Spinner from "./Component/spinner";
+import { getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword } from "firebase/auth";
+
+import Spinner from "../Component/spinner";
+
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 const firebaseConfig = {
@@ -29,6 +34,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
 export default function Home() {
   const [inputs, setInputs] = useState({});
   const [open, setOpen] = React.useState(false);
@@ -38,7 +44,6 @@ export default function Home() {
     const value = event.target.value;
     setInputs(values => ({...values, [name]: value}))
   }
-
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -48,13 +53,13 @@ export default function Home() {
   };
 const handleSubmit = (event: any) => {
     setIsLoading(true);
-    setOpen(true);
+    //<Spinner/>
     event.preventDefault();
 
-    signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+    createUserWithEmailAndPassword(auth, inputs.email, inputs.password)
     .then((userCredential) => {
     const user = userCredential.user;
-    
+    setOpen(true);
     setIsLoading(false)
   })
   .catch((error) => {
@@ -73,7 +78,7 @@ const handleSubmit = (event: any) => {
               alt="Your Company"
             />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Giriş Yap
+              Kayıt Ol
             </h2>
           </div>
 
@@ -102,11 +107,7 @@ const handleSubmit = (event: any) => {
                   <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                     Şifre
                   </label>
-                  <div className="text-sm">
-                    <a href="./resetpass" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                      Şifreni mi unuttun?
-                    </a>
-                  </div>
+
                 </div>
                 <div className="mt-2">
                   <input
@@ -121,30 +122,25 @@ const handleSubmit = (event: any) => {
                   />
                 </div>
               </div>
-
+              <FormControlLabel required control={<Checkbox />} label="Kullanım Sözleşmesini Onaylıyorum" />
+              <FormControlLabel required control={<Checkbox />} label="KVKK metnini onaylıyorum" />
               <div>
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  Giriş Yap 
+                  Kaydı Tamamla
                 </button>
                 {isLoading ? <Spinner />:true }
               </div>
             </form>
-
-            <p className="mt-10 text-center text-sm text-gray-500">
-              Hesabın yok mu?{' '}
-              <a href="./register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                Hemen kayıt ol
-              </a>
-            </p>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Giriş başarılı!
+         Kaydınız başarı ile oluşturuldu!
         </Alert>
       </Snackbar>
+            
           </div>
           
         </div>
