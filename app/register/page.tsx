@@ -55,17 +55,16 @@ export default function Home() {
     setSuccess(false);
   };
 
-const handleSubmit = (event: any) => {
-    setIsLoading(true);
-    //<Spinner/>
+const handleSubmit =  (event: any) => {
+    setIsLoading(true);//Spinneri Başlat
     event.preventDefault();
-
     createUserWithEmailAndPassword(auth, inputs.email, inputs.password)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
     const user = userCredential.user;
-    setSuccess(true);
-    setIsLoading(false)
-    router.push('./');
+    setSuccess(true);//Başarı mesajını göster
+    await new Promise((resolve) => setTimeout(resolve, 3000));//3 Saniye bekle 
+    setIsLoading(false);//Spinneri Durdur
+    router.push('./');// login sayfasına Git
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -150,7 +149,7 @@ const handleSubmit = (event: any) => {
             </form>
             <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-         Hesabınız başarı ile oluşturuldu!
+         Hesabınız başarı ile oluşturuldu. Giriş sayfasına yönlendiriliyorsunuz!
         </Alert>
       </Snackbar>
 
